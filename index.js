@@ -2,13 +2,12 @@ import axios from "axios";
 import { CronJob } from "cron";
 
 async function run() {
-  const online = await axios
-    .get(process.env.ENDPOINT, {
-      params: { "cache-buster": Date.now() },
-    })
-    .then((r) => {
-      return r.status === 200;
-    });
+  const url = new URL(process.env.ENDPOINT);
+  url.searchParams.set("cache-buster", Date.now());
+
+  const online = await axios.get(url.toString()).then((r) => {
+    return r.status === 200;
+  });
 
   await axios.post(
     "https://slack.com/api/chat.postMessage",
@@ -19,7 +18,7 @@ async function run() {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `Endpoint "${process.env.ENDPOINT}" ${online ? "Online ✅" : "Offline ⛔️"}`,
+            text: `Endpoint "${url.toString()}" ${online ? "Online ✅" : "Offline ⛔️"}`,
           },
         },
       ],
