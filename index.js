@@ -18,7 +18,7 @@ async function run() {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `Endpoint "${url.toString()}" ${online ? "Online ✅" : "Offline ⛔️"}`,
+            text: `${online ? "Online ✅" : "Offline ⛔️"} | Endpoint: ${url.toString()}`,
           },
         },
       ],
