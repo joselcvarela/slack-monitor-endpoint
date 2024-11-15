@@ -5,9 +5,12 @@ async function run() {
   const url = new URL(process.env.ENDPOINT);
   url.searchParams.set("cache-buster", Date.now());
 
-  const online = await axios.get(url.toString()).then((r) => {
-    return r.status === 200;
-  });
+  const online = await axios
+    .get(url.toString())
+    .then((r) => {
+      return r.status === 200;
+    })
+    .catch((r) => false);
 
   await axios.post(
     "https://slack.com/api/chat.postMessage",
