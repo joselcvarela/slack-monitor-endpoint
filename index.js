@@ -1,15 +1,18 @@
+// @ts-check
+
 import axios from "axios";
 import { CronJob } from "cron";
 
 async function run() {
   try {
-    const url_list = process.env.ENDPOINT.split(";");
+    const urls = process.env.ENDPOINT.split(";").map((raw_url) => {
+      const url = new URL(raw_url);
+      url.searchParams.set("cache-buster", Date.now());
+      return url;
+    });
 
     const online = await Promise.all(
-      url_list.map(async (raw_url, i) => {
-        const url = new URL(raw_url);
-        url.searchParams.set("cache-buster", Date.now());
-
+      urls.map(async (url, i) => {
         return await axios
           .get(url.toString())
           .then((r) => {
@@ -34,7 +37,7 @@ async function run() {
 
                 ...online.map(
                   (online, i) =>
-                    `${online ? "Online ✅" : "Offline ⛔️"} | Endpoint: ${url_list[i]}`
+                    `${online ? "Online ✅" : "Offline ⛔️"} | Endpoint: ${urls[i]}`
                 ),
               ].join("\n"),
             },
