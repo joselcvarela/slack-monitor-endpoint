@@ -22,34 +22,36 @@ async function run() {
       })
     );
 
-    await axios.post(
-      "https://slack.com/api/chat.postMessage",
-      {
-        channel: process.env.SLACK_CHANNEL_ID,
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: [
-                online.map((online) => (online ? "✅" : "⛔️")).join(" ") +
-                  "⤵️",
+    if (online.some((online) => online === false)) {
+      await axios.post(
+        "https://slack.com/api/chat.postMessage",
+        {
+          channel: process.env.SLACK_CHANNEL_ID,
+          blocks: [
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: [
+                  online.map((online) => (online ? "" : "⛔️")).join(" ") +
+                    "⤵️",
 
-                ...online.map(
-                  (online, i) =>
-                    `${online ? "Online ✅" : "Offline ⛔️"} | Endpoint: ${urls[i]}`
-                ),
-              ].join("\n"),
+                  ...online.map(
+                    (online, i) =>
+                      `${online ? "" : "Offline ⛔️"} | Endpoint: ${urls[i]}`
+                  ),
+                ].join("\n"),
+              },
             },
-          },
-        ],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.SLACK_TOKEN}`,
+          ],
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.SLACK_TOKEN}`,
+          },
+        }
+      );
+    }
   } catch (err) {
     console.error(err);
     throw err;
