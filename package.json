@@ -15,6 +15,7 @@
     "cron": "^3.2.1"
   },
   "devDependencies": {
+    "@types/node": "^22.10.8",
     "prettier": "^3.3.3"
   }
 }
